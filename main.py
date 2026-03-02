@@ -123,9 +123,10 @@ def cleanup_media_files():
 async def on_startup(app):
     cleanup_media_files()
     start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ig_status = "logged in" if instagram_handler.logged_in else "NOT logged in"
     await app.bot.send_message(
         chat_id=admin_id,
-        text=f"Bot started successfully at {start_time}"
+        text=f"Bot started at {start_time}\nInstagram: {ig_status}"
     )
 
 if __name__ == "__main__":

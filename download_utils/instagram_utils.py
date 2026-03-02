@@ -7,27 +7,40 @@ load_dotenv()
 
 
 class InstagramHandler:
+    SESSION_FILE = "instagrapi_session.json"
+
     def __init__(self):
         self.client = Client()
+        self.logged_in = False
         self._configure_client()
 
         username = os.getenv("INSTAGRAM_USERNAME")
         password = os.getenv("INSTAGRAM_PASSWORD")
 
-        session_file = "instagrapi_session.json"
+        # Try to reuse existing session without calling login()
+        if os.path.exists(self.SESSION_FILE):
+            try:
+                self.client.load_settings(self.SESSION_FILE)
+                self._configure_client()
+                self.client.login(username, password)
+                # Test the session with a lightweight request
+                self.client.user_info_by_username(username)
+                self.logged_in = True
+                print("Instagram: session is valid")
+                return
+            except Exception as e:
+                print(f"Instagram: session invalid ({e}), trying fresh login")
+                # Reset client for a clean login attempt
+                self.client = Client()
+                self._configure_client()
 
-        # Try to load existing session
-        try:
-            self.client.load_settings(session_file)
-            self._configure_client()  # Re-apply settings after loading
-        except:
-            pass
-
-        # Login
+        # Fresh login only if session didn't work
         if username and password:
             try:
                 self.client.login(username, password)
-                self.client.dump_settings(session_file)
+                self.client.dump_settings(self.SESSION_FILE)
+                self.logged_in = True
+                print("Instagram: fresh login successful")
             except Exception as e:
                 print(f"Instagram login failed: {e}")
 
