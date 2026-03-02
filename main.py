@@ -66,7 +66,9 @@ async def handle_links(update: Update, context: ContextTypes.DEFAULT_TYPE):
             # Getting and sending media files
             media = file_handler.get_files(shortcode)
             if media:
-                await update.message.reply_media_group(media)
+                # Telegram limits media groups to 10 items
+                for i in range(0, len(media), 10):
+                    await update.message.reply_media_group(media[i:i + 10])
 
                 # Cleanup after sending media
                 try:
