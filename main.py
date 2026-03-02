@@ -15,6 +15,7 @@ from download_utils.tiktok_utils import fallback_download
 from stats_utils import load_stats, save_stats, hash_id
 from datetime import datetime
 import os
+import glob
 
 
 # Load environment variables
@@ -109,7 +110,18 @@ async def send_error_message(context: ContextTypes.DEFAULT_TYPE, matches, error_
 async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Pong!")
 
+def cleanup_media_files():
+    extensions = ("*.mp4", "*.jpg", "*.jpeg", "*.png")
+    removed = 0
+    for ext in extensions:
+        for f in glob.glob(os.path.join(os.getcwd(), ext)):
+            os.remove(f)
+            removed += 1
+    if removed:
+        print(f"Startup cleanup: removed {removed} leftover media file(s)")
+
 async def on_startup(app):
+    cleanup_media_files()
     start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     await app.bot.send_message(
         chat_id=admin_id,

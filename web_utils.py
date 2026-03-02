@@ -25,7 +25,7 @@ class LinkHandler:
             (?:https?:\/\/(?:www\.)?)
             (?:
                 instagram\.com\/(?:reel|p)\/(?P<instagram_shortcode>[\w-]+) |
-                vm\.tiktok\.com\/(?P<tiktok_shortcode_short>[^\/\?\s]+) |  
+                v[mt]\.tiktok\.com\/(?P<tiktok_shortcode_short>[^\/\?\s]+) |
                 tiktok\.com\/@[\w.-]+\/video\/(?P<tiktok_shortcode_long>\d+)
             )
             """,
